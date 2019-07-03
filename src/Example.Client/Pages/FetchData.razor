@@ -1,6 +1,6 @@
 ﻿@page "/fetchdata"
 @using Example.Shared
-@inject HttpClient Http
+@inject IWeatherForecastService Service
 
 <h1>Weather forecast</h1>
 
@@ -36,10 +36,10 @@ else
 }
 
 @code {
-    WeatherForecast[] forecasts;
+    IEnumerable<WeatherForecast> forecasts;
 
     protected override async Task OnInitAsync()
     {
-        forecasts = await Http.GetJsonAsync<WeatherForecast[]>("api/SampleData/WeatherForecasts");
+        forecasts = await Service.GetForecastAsync();
     }
 }

@@ -1,30 +1,27 @@
 ﻿using Example.Shared;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Example.Server.Controllers
+namespace Example.Server.Data
 {
-    [Route("api/[controller]")]
-    public class SampleDataController : Controller
+    public class ServerWeatherForecastService : IWeatherForecastService
     {
         private static string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        [HttpGet("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts()
+        public Task<IEnumerable<WeatherForecast>> GetForecastAsync()
         {
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
+                Summary = "SVR:" + Summaries[rng.Next(Summaries.Length)]
+            }));
         }
     }
 }
