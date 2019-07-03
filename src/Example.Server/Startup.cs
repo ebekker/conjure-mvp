@@ -55,7 +55,6 @@ namespace Example.Server
                 {
                     endpoints.MapBlazorHub();
                 }
-                //endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
