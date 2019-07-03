@@ -1,0 +1,20 @@
+﻿@code {
+[CascadingParameter] List<ColumnDefinition> ColumnDefs { get; set; }
+[Parameter] string Field { get; set; }
+[Parameter] string Header { get; set; }
+[Parameter] bool Resizable { get; set; }
+[Parameter] bool Sortable { get; set; }
+[Parameter] bool Filter { get; set; }
+
+protected override void OnInit()
+{
+    ColumnDefs.Add(new ColumnDefinition
+    {
+        Field = Field,
+        HeaderName = Header,
+        Resizable = Resizable,
+        Sortable = Sortable,
+        Filter = Filter,
+    });
+}
+}
