@@ -1,23 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29006.145
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F520F3D9-D127-47E4-BB88-655CA90D6EE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conjure.Controls", "src\Conjure.Controls\Conjure.Controls.csproj", "{6CB2F40F-0B79-4E2B-918D-DE04061BBB1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conjure.Controls", "src\Conjure.Controls\Conjure.Controls.csproj", "{6CB2F40F-0B79-4E2B-918D-DE04061BBB1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conjure.Security", "src\Conjure.Security\Conjure.Security.csproj", "{892F8523-E62D-4B97-9645-258C70077883}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conjure.Security", "src\Conjure.Security\Conjure.Security.csproj", "{892F8523-E62D-4B97-9645-258C70077883}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conjure.Security.Client", "src\Conjure.Security.Client\Conjure.Security.Client.csproj", "{C909E6C0-E387-4822-B02B-739297A96BB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conjure.Security.Client", "src\Conjure.Security.Client\Conjure.Security.Client.csproj", "{C909E6C0-E387-4822-B02B-739297A96BB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conjure.Security.Server", "src\Conjure.Security.Server\Conjure.Security.Server.csproj", "{830EBF65-B12B-4472-8552-31B7A15C7D4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conjure.Security.Server", "src\Conjure.Security.Server\Conjure.Security.Server.csproj", "{830EBF65-B12B-4472-8552-31B7A15C7D4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Client", "src\Example.Client\Example.Client.csproj", "{D3750E7B-AC3C-42F3-8B05-0D97927629B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.Client", "src\Example.Client\Example.Client.csproj", "{D3750E7B-AC3C-42F3-8B05-0D97927629B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Server", "src\Example.Server\Example.Server.csproj", "{DABF673C-FC29-49EA-83E2-E64AC1BB7B81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.Server", "src\Example.Server\Example.Server.csproj", "{DABF673C-FC29-49EA-83E2-E64AC1BB7B81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Shared", "src\Example.Shared\Example.Shared.csproj", "{0D24C962-DB27-47B4-AABF-A6F30D2AE300}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.Shared", "src\Example.Shared\Example.Shared.csproj", "{0D24C962-DB27-47B4-AABF-A6F30D2AE300}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{FE25A11F-F9CE-4053-9FD8-11C4B6D623CD}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+		src\Directory.Build.targets = src\Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6CB2F40F-0B79-4E2B-918D-DE04061BBB1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -117,6 +120,9 @@ Global
 		{0D24C962-DB27-47B4-AABF-A6F30D2AE300}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D24C962-DB27-47B4-AABF-A6F30D2AE300}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6CB2F40F-0B79-4E2B-918D-DE04061BBB1E} = {F520F3D9-D127-47E4-BB88-655CA90D6EE1}
 		{892F8523-E62D-4B97-9645-258C70077883} = {F520F3D9-D127-47E4-BB88-655CA90D6EE1}
@@ -125,5 +131,8 @@ Global
 		{D3750E7B-AC3C-42F3-8B05-0D97927629B3} = {F520F3D9-D127-47E4-BB88-655CA90D6EE1}
 		{DABF673C-FC29-49EA-83E2-E64AC1BB7B81} = {F520F3D9-D127-47E4-BB88-655CA90D6EE1}
 		{0D24C962-DB27-47B4-AABF-A6F30D2AE300} = {F520F3D9-D127-47E4-BB88-655CA90D6EE1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09047023-6726-46BF-89CF-4B60A6108C59}
 	EndGlobalSection
 EndGlobal

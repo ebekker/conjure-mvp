@@ -13,34 +13,50 @@ namespace Example.Server
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddNewtonsoftJson();
+            services.AddMvc()
+                .AddNewtonsoftJson();
+
             services.AddResponseCompression(opts =>
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
                     new[] { "application/octet-stream" });
             });
 
+            if (ServerGlobals.IsBlazorServerSide)
+            {
+                services.AddServerSideBlazor();
+            }
+
             services.AddSingleton<IWeatherForecastService, Data.ServerWeatherForecastService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseResponseCompression();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBlazorDebugging();
             }
+            else
+            {
+                app.UseHttpsRedirection();
+            }
 
+            app.UseResponseCompression();
             app.UseClientSideBlazorFiles<Client.Startup>();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
-                endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
+                if (ServerGlobals.IsBlazorServerSide)
+                {
+                    endpoints.MapBlazorHub();
+                }
+                //endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
+                endpoints.MapFallbackToPage("/_Host");
             });
         }
     }

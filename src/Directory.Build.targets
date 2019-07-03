@@ -1,0 +1,28 @@
+<Project>
+
+    <Choose>
+        <When Condition="$(DefineConstants.Contains(BLAZOR_SERVERSIDE))=='true'">
+            <PropertyGroup>
+                <BlazorHostingMode>SERVER-SIDE</BlazorHostingMode>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <BlazorHostingMode>CLIENT-SIDE</BlazorHostingMode>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+
+    <PropertyGroup>
+        <BlazorPrerenderEnabled>false</BlazorPrerenderEnabled>
+        <BlazorPrerenderEnabled Condition="$(DefineConstants.Contains(BLAZOR_SERVERSIDE)) OR $(DefineConstants.Contains(BLAZOR_PRERENDER))">true</BlazorPrerenderEnabled>
+    </PropertyGroup>
+
+    <Target Name="EmitBlazorHostingMode" BeforeTargets="CoreCompile">
+        <Message Importance="High"
+            Text="Blazor Hosting Mode:  $(BlazorHostingMode)" />
+        <Message Importance="High"
+            Text="Blazor Prerendering:  $(BlazorPrerenderEnabled)" />
+    </Target>
+
+</Project>
