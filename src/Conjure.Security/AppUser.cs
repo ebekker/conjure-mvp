@@ -6,6 +6,8 @@ namespace Conjure.Security
 {
     public class AppUser
     {
+        public const string AuthenticationType = "appsecurity";
+
         public bool IsAuthenticated { get; set; }
 
         public string Name { get; set; }

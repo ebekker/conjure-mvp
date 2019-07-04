@@ -1,0 +1,9 @@
+﻿<AuthorizeView>
+    <NotAuthorized>
+        <a href="api/security/user/fake-signin">Sign in</a>
+    </NotAuthorized>
+    <Authorized>
+        <span class="shift">Hello, @context.User.Identity.Name</span>
+        <a href="api/security/user/fake-signout">Sign out</a>
+    </Authorized>
+</AuthorizeView>

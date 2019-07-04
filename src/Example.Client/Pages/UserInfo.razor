@@ -1,0 +1,23 @@
+﻿@page "/userinfo"
+
+<h1>User Info</h1>
+
+This is your user info:
+
+<h3>ClaimsPrincipal:</h3>
+
+<li>IsAuthencticated: @_authState?.User?.Identity?.IsAuthenticated</li>
+<li>Name: @_authState?.User?.Identity?.Name</li>
+
+@code {
+
+    [CascadingParameter] Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    AuthenticationState _authState;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _authState = await AuthenticationStateTask;
+    }
+
+}

@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-      <DefineConstants>$(DefineConstants);BLAZOR_SERVERSIDE</DefineConstants>
+      <!--<DefineConstants>$(DefineConstants);BLAZOR_SERVERSIDE</DefineConstants>-->
       <!--<DefineConstants>$(DefineConstants);BLAZOR_PRERENDER</DefineConstants>-->
     </PropertyGroup>
 </Project>

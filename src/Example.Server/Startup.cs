@@ -2,6 +2,7 @@ using Example.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
@@ -11,10 +12,19 @@ namespace Example.Server
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
                 .AddNewtonsoftJson();
+
+            services.AddHttpContextAccessor();
 
             services.AddResponseCompression(opts =>
             {
@@ -26,6 +36,12 @@ namespace Example.Server
             {
                 services.AddServerSideBlazor();
             }
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "fake";
+            })
+                .AddCookie("fake");
 
             services.AddSingleton<IWeatherForecastService, Data.ServerWeatherForecastService>();
         }
@@ -47,6 +63,9 @@ namespace Example.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
