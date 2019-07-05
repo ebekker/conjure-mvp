@@ -1,16 +1,16 @@
 ﻿@using Microsoft.JSInterop
 @inject IJSRuntime JS
-@inject System.Net.Http.HttpClient Http
 
 <CascadingValue Value="@colDefs">@ChildContent</CascadingValue>
-<div id="@gridId" style="height: 50%; width: 80%;" class="ag-theme-balham"></div>
+<div id="@gridId" style="height: @(HeightStyle); width: @(WidthStyle);" class="ag-theme-balham"></div>
 
 @code {
 
 [Parameter] Func<int?, int?, SortModel, Task<GetRowsResult>> GetRowsHandler { get; set; }
 [Parameter] RenderFragment ChildContent { get; set; }
 [Parameter] EventCallback<string> ItemSelected { get; set; }
-
+[Parameter] string HeightStyle { get; set; } = "500px";
+[Parameter] string WidthStyle { get; set; } = "500px";
 
 string gridId = $"grid-{Guid.NewGuid()}";
 List<ColumnDefinition> colDefs = new List<ColumnDefinition>();
