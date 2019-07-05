@@ -69,8 +69,8 @@ async Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
     return new GetRowsResult
     {
         Success = true,
-        LastRow = result.totalRows,
-        BlockRows = result.pageRows.ToArray(),
+        LastRow = result.TotalCount,
+        BlockRows = result.PageItems.ToArray(),
     };
 }
 

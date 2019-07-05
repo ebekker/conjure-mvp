@@ -1,4 +1,5 @@
-﻿using Example.Shared;
+﻿using Conjure.Data;
+using Example.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Example.Server.Data
         private static DateTime _lastUpdateTime = DateTime.MinValue;
         private static IEnumerable<WeatherForecast> _lastUpdateData;
 
-        public Task<(int, IEnumerable<WeatherForecast>)> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take)
+        public Task<QueryResultPage<WeatherForecast>> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take)
         {
             if ((DateTime.Now - _lastUpdateTime).TotalMinutes > 5.0)
             {
@@ -48,7 +49,11 @@ namespace Example.Server.Data
             if (take.HasValue)
                 rows = rows.Take(take.Value);
 
-            return Task.FromResult((_lastUpdateData.Count(), rows));
+            return Task.FromResult(new QueryResultPage<WeatherForecast>
+            {
+                TotalCount = _lastUpdateData.Count(),
+                PageItems = rows,
+            });
         }
 
         private void GenerateForecasts()

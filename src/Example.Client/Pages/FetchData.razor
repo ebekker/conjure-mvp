@@ -41,6 +41,6 @@ else
     protected override async Task OnInitAsync()
     {
         var forecastsResult = await Service.GetForecastAsync(null, null, 0, 10);
-        forecasts = forecastsResult.pageRows;
+        forecasts = forecastsResult.PageItems;
     }
 }
