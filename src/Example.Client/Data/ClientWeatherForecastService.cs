@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Example.Client.Data
 {
@@ -17,11 +18,27 @@ namespace Example.Client.Data
             _http = http;
         }
 
-        public async Task<IEnumerable<WeatherForecast>> GetForecastAsync()
+        public async Task<(int, IEnumerable<WeatherForecast>)> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take)
         {
-            var forecasts = await _http.GetJsonAsync<WeatherForecast[]>("api/WeatherForecasts");
+            var query = new System.Collections.Specialized.NameValueCollection();
 
-            foreach (var f in forecasts)
+            if (sortBy != null)
+                query[nameof(sortBy)] = sortBy;
+            if (sortDesc ?? false)
+                query[nameof(sortDesc)] = sortDesc.ToString();
+            if (skip.HasValue)
+                query[nameof(skip)] = skip.ToString();
+            if (take.HasValue)
+                query[nameof(take)] = take.ToString();
+
+            var urlBuilder = new UriBuilder("api/WeatherForecasts")
+            {
+                Query = query.ToString(),
+            };
+
+            var forecasts = await _http.GetJsonAsync<(int totalRows, WeatherForecast[] pageRows)>(urlBuilder.ToString());
+
+            foreach (var f in forecasts.pageRows)
             {
                 f.Summary = "CLT:" + f.Summary;
             }

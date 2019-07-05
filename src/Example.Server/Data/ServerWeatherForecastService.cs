@@ -8,20 +8,59 @@ namespace Example.Server.Data
 {
     public class ServerWeatherForecastService : IWeatherForecastService
     {
+        public const int RowCount = 5000;
+
         private static string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        public Task<IEnumerable<WeatherForecast>> GetForecastAsync()
+        private static DateTime _lastUpdateTime = DateTime.MinValue;
+        private static IEnumerable<WeatherForecast> _lastUpdateData;
+
+        public Task<(int, IEnumerable<WeatherForecast>)> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take)
+        {
+            if ((DateTime.Now - _lastUpdateTime).TotalMinutes > 5.0)
+            {
+                lock (typeof(ServerWeatherForecastService))
+                {
+                    if ((DateTime.Now - _lastUpdateTime).TotalMinutes > 5.0)
+                    {
+                        GenerateForecasts();
+                    }
+                }
+            }
+
+            var rows = _lastUpdateData;
+
+            if (sortBy != null)
+            {
+                var p = typeof(WeatherForecast).GetProperty(sortBy, System.Reflection.BindingFlags.IgnoreCase
+                    | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if (sortDesc ?? false)
+                    rows = rows.OrderByDescending(wf => p.GetValue(wf));
+                else
+                    rows = rows.OrderBy(wf => p.GetValue(wf));
+            }
+
+            if (skip.HasValue)
+                rows = rows.Skip(skip.Value);
+            if (take.HasValue)
+                rows = rows.Take(take.Value);
+
+            return Task.FromResult((_lastUpdateData.Count(), rows));
+        }
+
+        private void GenerateForecasts()
         {
             var rng = new Random();
-            return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            _lastUpdateData = Enumerable.Range(1, RowCount).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = "SVR:" + Summaries[rng.Next(Summaries.Length)]
-            }));
+            }).ToArray();
+            _lastUpdateTime = DateTime.Now;
         }
     }
 }

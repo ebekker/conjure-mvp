@@ -21,9 +21,24 @@ namespace Example.Server.Controllers
         [HttpGet]
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
-            var forecasts = (await _service.GetForecastAsync()).ToArray();
+            var forecasts = await _service.GetForecastAsync(null, null, null, null);
+            var rows = forecasts.pageRows.ToArray();
 
-            foreach (var f in forecasts)
+            foreach (var f in rows)
+            {
+                f.Summary = "CTL:" + f.Summary;
+            }
+
+            return rows;
+        }
+
+        [HttpGet]
+        public async Task<(int, IEnumerable<WeatherForecast>)> Get(string sortBy, bool? sortDesc, int? skip, int? take)
+        {
+            var forecasts = await _service.GetForecastAsync(sortBy, sortDesc, skip, take);
+            var rows = forecasts.pageRows.ToArray();
+
+            foreach (var f in rows)
             {
                 f.Summary = "CTL:" + f.Summary;
             }

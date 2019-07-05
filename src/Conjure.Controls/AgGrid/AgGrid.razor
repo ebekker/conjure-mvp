@@ -12,6 +12,10 @@
 [Parameter] string HeightStyle { get; set; } = "500px";
 [Parameter] string WidthStyle { get; set; } = "500px";
 
+[Parameter] bool? Pagination { get; set; }
+[Parameter] int? PaginationPageSize { get; set; }
+[Parameter] bool? PaginationAutoPageSize{ get; set; }
+
 string gridId = $"grid-{Guid.NewGuid()}";
 List<ColumnDefinition> colDefs = new List<ColumnDefinition>();
 bool gridRendered = false;
@@ -28,10 +32,14 @@ protected Task RenderGrid()
 
     gridRendered = true;
 
-    var gridOptions = new
+    var gridOptions = new Dictionary<string, object>
     {
-        columnDefs = colDefs.ToArray(),
+        ["columnDefs"] = colDefs.ToArray(),
     };
+
+    if (Pagination.HasValue) { gridOptions["pagination"] = Pagination.Value; }
+    if (PaginationPageSize.HasValue) { gridOptions["paginationPageSize"] = PaginationPageSize.Value; }
+    if (PaginationAutoPageSize.HasValue) { gridOptions["paginationAutoPageSize"] = PaginationAutoPageSize.Value; }
 
     var thisRef = DotNetObjectRef.Create(this);
     JS.InvokeAsync<object>("createGrid", thisRef, gridId, gridOptions);

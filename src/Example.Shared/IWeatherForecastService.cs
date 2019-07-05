@@ -7,6 +7,6 @@ namespace Example.Shared
 {
     public interface IWeatherForecastService
     {
-        Task<IEnumerable<WeatherForecast>> GetForecastAsync();
+        Task<(int totalRows, IEnumerable<WeatherForecast> pageRows)> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take);
     }
 }

@@ -7,77 +7,71 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@*@if (forecasts == null)
 {
     <p><em>Loading...</em></p>
 }
 else
-{
-    <AgGrid GetRowsHandler="GetRows" HeightStyle="400px" WidthStyle="100%">
+{*@
+    <AgGrid GetRowsHandler="GetRows" HeightStyle="400px" WidthStyle="100%" Pagination="true" PaginationAutoPageSize="true">
         <ColDef Sortable="true" Resizable="true" Field="date" Header="Date" />
         <ColDef Sortable="true" Resizable="true" Field="temperatureC" Header="Celsius (°C)"/>
         <ColDef Sortable="true" Resizable="true" Field="temperatureF" Header="Fahrenheit (°F)"/>
         <ColDef Sortable="true" Resizable="true" Field="summary" Header="Summary" />
     </AgGrid>
-
-    <hr/>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+@*}*@
 
 @code {
-IEnumerable<WeatherForecast> forecasts;
+//IEnumerable<WeatherForecast> forecasts;
 
-protected override async Task OnInitAsync()
+//protected override async Task OnInitAsync()
+//{
+//    forecasts = (await Service.GetForecastAsync(null, null, 0, 10)).pageRows;
+//}
+
+//Task<GetRowsResult> LocalGetRows(int? skip, int? take, SortModel sort)
+//{
+//    var rows = forecasts;
+
+//    if (skip.HasValue)
+//        rows = rows.Skip(skip.Value);
+//    if (take.HasValue)
+//        rows = rows.Take(take.Value);
+//    if (sort != null)
+//    {
+//        // We ignore case since default JSON serialization will lowercase the
+//        // first letter and so the ColId won't match its origin property otherwise
+//        var p = typeof(WeatherForecast).GetProperty(sort.ColId, System.Reflection.BindingFlags.IgnoreCase
+//            | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+//        if (sort.Sort == "desc")
+//            rows = rows.OrderByDescending(x => p.GetValue(x));
+//        else
+//            rows = rows.OrderBy(x => p.GetValue(x));
+//    }
+
+//    return Task.FromResult(new GetRowsResult
+//    {
+//        Success = true,
+//        LastRow = forecasts.Count(),
+//        BlockRows = rows.ToArray(),
+//    });
+//}
+
+
+async Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
 {
-    forecasts = await Service.GetForecastAsync();
-}
+    var sortBy = sort?.ColId;
+    var sortDesc = "desc".Equals(sort?.Sort, StringComparison.OrdinalIgnoreCase);
 
-Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
-{
-    var rows = forecasts;
-    if (skip.HasValue)
-        rows = rows.Skip(skip.Value);
-    if (take.HasValue)
-        rows = rows.Take(take.Value);
-    if (sort != null)
-    {
-        // We ignore case since default JSON serialization will lowercase the
-        // first letter and so the ColId won't match its origin property otherwise
-        var p = typeof(WeatherForecast).GetProperty(sort.ColId, System.Reflection.BindingFlags.IgnoreCase
-            | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+    var result = await Service.GetForecastAsync(sortBy, sortDesc, skip, take);
 
-        if (sort.Sort == "desc")
-            rows = rows.OrderByDescending(x => p.GetValue(x));
-        else
-            rows = rows.OrderBy(x => p.GetValue(x));
-    }
-
-    return Task.FromResult(new GetRowsResult
+    return new GetRowsResult
     {
         Success = true,
-        LastRow = rows.Count(),
-        BlockRows = rows.ToArray(),
-    });
+        LastRow = result.totalRows,
+        BlockRows = result.pageRows.ToArray(),
+    };
 }
+
 }
