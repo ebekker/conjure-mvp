@@ -13,12 +13,47 @@
 }
 else
 {*@
-    <AgGrid GetRowsHandler="GetRows" HeightStyle="400px" WidthStyle="100%" Pagination="true" PaginationAutoPageSize="true">
-        <ColDef Sortable="true" Resizable="true" Field="date" Header="Date" />
-        <ColDef Sortable="true" Resizable="true" Field="temperatureC" Header="Celsius (°C)"/>
-        <ColDef Sortable="true" Resizable="true" Field="temperatureF" Header="Fahrenheit (°F)"/>
-        <ColDef Sortable="true" Resizable="true" Field="summary" Header="Summary" />
-    </AgGrid>
+
+<div class="container-fluid">
+    <EditForm Model="ScreenModel">
+        <div class="row">
+            <div class="col-md-9">
+                <AgGrid GetRowsHandler="GetRows" ItemSelected="RowSelected" HeightStyle="400px" WidthStyle="100%" Pagination="true" PaginationAutoPageSize="true">
+                    <ColDef Sortable="true" Resizable="true" Field="date" Header="Date" />
+                    <ColDef Sortable="true" Resizable="true" Field="temperatureC" Header="Celsius (°C)" />
+                    <ColDef Sortable="true" Resizable="true" Field="temperatureF" Header="Fahrenheit (°F)" />
+                    <ColDef Sortable="true" Resizable="true" Field="summary" Header="Summary" />
+                </AgGrid>
+
+            </div>
+            <div class="col-md-3">
+
+                <form>
+                    <div class="form-group">
+                        <label for="wfDate">Date:</label>
+                        <InputDate Id="wfDate" class="form-control" @bind-Value="ScreenModel.CurrentForecast.Date" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="wfTempC">Temperature (°C):</label>
+                        <InputNumber Id="wfTempC" class="form-control" @bind-Value="ScreenModel.CurrentForecast.TemperatureC" readonly />
+                    </div>
+                </form>
+
+                <form>
+                    <div class="form-group">
+                        <label for="wfTempF">Temperature (°F):</label>
+                        <input type="text" id="wfTempF" class="form-control" @value="_current.TemperatureF" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="wfSummary">Summary:</label>
+                        <InputText Id="wfSummary" class="form-control" @bind-Value="ScreenModel.CurrentForecast.Summary" readonly />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
 @*}*@
 
 @code {
@@ -58,6 +93,12 @@ else
 //    });
 //}
 
+FetchData2Model ScreenModel { get; set; } = new FetchData2Model
+{
+    CurrentForecast = new WeatherForecast(),
+};
+
+//WeatherForecast _current = new WeatherForecast();
 
 async Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
 {
@@ -72,6 +113,24 @@ async Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
         LastRow = result.TotalCount,
         BlockRows = result.PageItems.ToArray(),
     };
+}
+
+void RowSelected(string selJson)
+{
+    Console.WriteLine("SELECTED: " + selJson);
+    var sel = JsonHelper.Parse<WeatherForecast[]>(selJson);
+
+    if (sel?.Length > 0)
+    {
+        Console.WriteLine("SELECTED: " + sel[0].Date);
+        Console.WriteLine("        : " + sel[0].Summary);
+        ScreenModel.CurrentForecast = sel[0];
+    }
+    else
+    {
+        Console.WriteLine("UNSELECTED");
+        ScreenModel.CurrentForecast = null;
+    }
 }
 
 }
