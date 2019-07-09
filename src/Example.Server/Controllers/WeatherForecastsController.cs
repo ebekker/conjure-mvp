@@ -20,9 +20,9 @@ namespace Example.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<QueryResultPage<WeatherForecast>> Get(string sortBy, bool? sortDesc, int? skip, int? take = 3)
+        public async Task<FetchResult<WeatherForecast>> Get([FromQuery]FetchOptions options)
         {
-            var forecasts = await _service.GetForecastAsync(sortBy, sortDesc, skip, take);
+            var forecasts = await _service.GetForecastAsync(options);
             return forecasts;
         }
     }

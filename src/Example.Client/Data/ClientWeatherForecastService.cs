@@ -19,24 +19,22 @@ namespace Example.Client.Data
             _http = http;
         }
 
-        public async Task<QueryResultPage<WeatherForecast>> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take)
+        public async Task<FetchResult<WeatherForecast>> GetForecastAsync(FetchOptions options)
         {
             //var query = new System.Collections.Specialized.NameValueCollection();
             var query = HttpUtility.ParseQueryString(string.Empty);
 
-            if (sortBy != null)
-                query[nameof(sortBy)] = sortBy;
-            if (sortDesc ?? false)
-                query[nameof(sortDesc)] = sortDesc.ToString();
-            if (skip.HasValue)
-                query[nameof(skip)] = skip.ToString();
-            if (take.HasValue)
-                query[nameof(take)] = take.ToString();
+            if (options.Sort!= null)
+                query[nameof(options.Sort)] = options.Sort;
+            if (options.Skip.HasValue)
+                query[nameof(options.Skip)] = options.Skip.ToString();
+            if (options.Take.HasValue)
+                query[nameof(options.Take)] = options.Take.ToString();
 
-            var forecasts = await _http.GetJsonAsync<QueryResultPage<WeatherForecast>>(
+            var forecasts = await _http.GetJsonAsync<FetchResult<WeatherForecast>>(
                 "api/WeatherForecasts?" + query.ToString());
 
-            foreach (var f in forecasts.PageItems)
+            foreach (var f in forecasts.Items)
             {
                 f.Summary = "CLT:" + f.Summary;
             }

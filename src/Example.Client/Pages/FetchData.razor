@@ -36,11 +36,11 @@ else
 }
 
 @code {
-    IEnumerable<WeatherForecast> forecasts;
+IEnumerable<WeatherForecast> forecasts;
 
-    protected override async Task OnInitAsync()
-    {
-        var forecastsResult = await Service.GetForecastAsync(null, null, 0, 10);
-        forecasts = forecastsResult.PageItems;
-    }
+protected override async Task OnInitAsync()
+{
+    var forecastsResult = await Service.GetForecastAsync(new Conjure.Data.FetchOptions { Take = 10 });
+    forecasts = forecastsResult.Items;
+}
 }

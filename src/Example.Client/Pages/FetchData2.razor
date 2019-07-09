@@ -102,16 +102,24 @@ FetchData2Model ScreenModel { get; set; } = new FetchData2Model
 
 async Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
 {
-    var sortBy = sort?.ColId;
-    var sortDesc = "desc".Equals(sort?.Sort, StringComparison.OrdinalIgnoreCase);
+    var options = new Conjure.Data.FetchOptions
+    {
+        Sort = sort?.ColId,
+        Skip = skip,
+        Take = take,
+    };
 
-    var result = await Service.GetForecastAsync(sortBy, sortDesc, skip, take);
+    if ("desc".Equals(sort?.Sort, StringComparison.OrdinalIgnoreCase))
+        options.Sort = "-" + options.Sort;
+
+
+    var result = await Service.GetForecastAsync(options);
 
     return new GetRowsResult
     {
         Success = true,
         LastRow = result.TotalCount,
-        BlockRows = result.PageItems.ToArray(),
+        BlockRows = result.Items.ToArray(),
     };
 }
 

@@ -3,6 +3,7 @@ using Example.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Example.Server.Data
@@ -19,7 +20,7 @@ namespace Example.Server.Data
         private static DateTime _lastUpdateTime = DateTime.MinValue;
         private static IEnumerable<WeatherForecast> _lastUpdateData;
 
-        public Task<QueryResultPage<WeatherForecast>> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take)
+        public Task<FetchResult<WeatherForecast>> GetForecastAsync(FetchOptions options)
         {
             if ((DateTime.Now - _lastUpdateTime).TotalMinutes > 5.0)
             {
@@ -34,25 +35,33 @@ namespace Example.Server.Data
 
             var rows = _lastUpdateData;
 
-            if (sortBy != null)
+            if (options.Sort != null)
             {
-                var p = typeof(WeatherForecast).GetProperty(sortBy, System.Reflection.BindingFlags.IgnoreCase
-                    | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                if (sortDesc ?? false)
-                    rows = rows.OrderByDescending(wf => p.GetValue(wf));
-                else
-                    rows = rows.OrderBy(wf => p.GetValue(wf));
+                foreach (var sortCol in options.Sort.Split(','))
+                {
+                    var desc = sortCol.StartsWith("-");
+                    var propName = desc ? sortCol.Substring(1) : sortCol;
+                    var p = typeof(WeatherForecast).GetProperty(propName, System.Reflection.BindingFlags.IgnoreCase
+                        | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+                    if (desc)
+                        rows = rows.OrderByDescending(wf => p.GetValue(wf));
+                    else
+                        rows = rows.OrderBy(wf => p.GetValue(wf));
+                }
+
             }
 
-            if (skip.HasValue)
-                rows = rows.Skip(skip.Value);
-            if (take.HasValue)
-                rows = rows.Take(take.Value);
+            if (options.Skip.HasValue)
+                rows = rows.Skip(options.Skip.Value);
 
-            return Task.FromResult(new QueryResultPage<WeatherForecast>
+            if (options.Take.HasValue)
+                rows = rows.Take(options.Take.Value);
+
+            return Task.FromResult(new FetchResult<WeatherForecast>
             {
                 TotalCount = _lastUpdateData.Count(),
-                PageItems = rows,
+                Items = rows,
             });
         }
 

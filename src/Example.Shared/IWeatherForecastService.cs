@@ -8,6 +8,6 @@ namespace Example.Shared
 {
     public interface IWeatherForecastService
     {
-        Task<QueryResultPage<WeatherForecast>> GetForecastAsync(string sortBy, bool? sortDesc, int? skip, int? take);
+        Task<FetchResult<WeatherForecast>> GetForecastAsync(FetchOptions options);
     }
 }
