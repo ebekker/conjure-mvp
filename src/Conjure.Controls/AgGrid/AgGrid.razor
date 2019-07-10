@@ -1,8 +1,15 @@
 ﻿@using Microsoft.JSInterop
 @inject IJSRuntime JS
+@implements IDisposable
+IAsyncDisposable
 
 <CascadingValue Value="@colDefs">@ChildContent</CascadingValue>
-<div id="@gridId" style="height: @(HeightStyle); width: @(WidthStyle);" class="ag-theme-balham"></div>
+<div id="@gridId" style="height: @(HeightStyle); width: @(WidthStyle);"
+     class="ag-theme-balham"
+     classX="ag-theme-bootstrap"
+     ></div>
+
+<button type="button" @onclick="@DumpSelection">Get Selection</button>
 
 @code {
 
@@ -25,10 +32,10 @@ protected override Task OnAfterRenderAsync()
     return RenderGrid();
 }
 
-protected Task RenderGrid()
+protected async Task RenderGrid()
 {
     if (gridRendered)
-        return Task.CompletedTask;
+        return;
 
     gridRendered = true;
 
@@ -42,9 +49,7 @@ protected Task RenderGrid()
     if (PaginationAutoPageSize.HasValue) { gridOptions["paginationAutoPageSize"] = PaginationAutoPageSize.Value; }
 
     var thisRef = DotNetObjectRef.Create(this);
-    JS.InvokeAsync<object>("createGrid", thisRef, gridId, gridOptions);
-    return Task.CompletedTask;
-
+    await JS.InvokeAsync<object>("createGrid", thisRef, gridId, gridOptions);
 }
 
 [JSInvokable]
@@ -62,5 +67,22 @@ public async Task<GetRowsResult> GetRows(int? startRow, int? endRow, SortModel[]
 public async Task SelectionChanged(string itemsJson)
 {
     await ItemSelected.InvokeAsync(itemsJson);
+}
+
+public async Task UpdateSelection(string itemsJson)
+{
+    await JS.InvokeAsync<object>("updateGridSelection", gridId, itemsJson);
+}
+
+protected void DumpSelection()
+{
+    Console.WriteLine("Dumping...");
+    JS.InvokeAsync<object>("dumpSelection", gridId);
+}
+
+void IDisposable.Dispose()
+{
+    Console.WriteLine("Disposing AgGrid: " + gridId);
+    JS.InvokeAsync<object>("gridDispose", gridId);
 }
 }
