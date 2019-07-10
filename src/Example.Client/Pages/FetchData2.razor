@@ -1,6 +1,7 @@
 ﻿@page "/fetchdata2"
 @using Example.Shared
 @using Conjure.Controls.AgGrid
+@using Conjure.Controls.Bound
 @inject IWeatherForecastService Service
 
 <h1>Weather forecast</h1>
@@ -8,17 +9,17 @@
 <p>This component demonstrates fetching data from the server.</p>
 
 @*@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{*@
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {*@
 
 <div class="container-fluid">
     <EditForm Model="ScreenModel">
         <div class="row">
             <div class="col-md-9">
-                <AgGrid GetRowsHandler="GetRows" ItemSelected="RowSelected" HeightStyle="400px" WidthStyle="100%" Pagination="true" PaginationAutoPageSize="true">
+                <AgGrid @ref="theGrid" GetRowsHandler="GetRows" ItemSelected="RowSelected" HeightStyle="400px" WidthStyle="100%" Pagination="true" PaginationAutoPageSize="true">
                     <ColDef Sortable="true" Resizable="true" Field="date" Header="Date" />
                     <ColDef Sortable="true" Resizable="true" Field="temperatureC" Header="Celsius (°C)" />
                     <ColDef Sortable="true" Resizable="true" Field="temperatureF" Header="Fahrenheit (°F)" />
@@ -27,28 +28,16 @@ else
 
             </div>
             <div class="col-md-3">
-
                 <form>
-                    <div class="form-group">
-                        <label for="wfDate">Date:</label>
-                        <InputDate Id="wfDate" class="form-control" @bind-Value="ScreenModel.CurrentForecast.Date" readonly />
-                    </div>
-                    <div class="form-group">
-                        <label for="wfTempC">Temperature (°C):</label>
-                        <InputNumber Id="wfTempC" class="form-control" @bind-Value="ScreenModel.CurrentForecast.TemperatureC" readonly />
-                    </div>
+                    <BoundInputDate Label="Date" ValueRoot="@ScreenModel" ValuePath="CurrentForecast.Date" Changed="ScreenModel.Refresh" />
+                    <BoundInputDate Label="Date" ValueRoot="@ScreenModel" ValuePath="CurrentForecast.Date" Changed="ScreenModel.Refresh" ReadOnly="true"/>
+                    <BoundInputNumber TInput="int?" Label="Temp (°C)" ValueRoot="@ScreenModel" ValuePath="CurrentForecast.TemperatureC" Changed="ScreenModel.Refresh" />
+                    <BoundInputNumber TInput="int?" Label="Temp (°C)" ValueRoot="@ScreenModel" ValuePath="CurrentForecast.TemperatureC" Changed="ScreenModel.Refresh" ReadOnly="true" />
+                    <BoundInputNumber TInput="int?" Label="Temp (°F)" ValueRoot="@ScreenModel" ValuePath="CurrentForecast.TemperatureF" ReadOnly="true" Changed="ScreenModel.Refresh" />
+                    <BoundInputText Label="Summary" ValueRoot="@ScreenModel" ValuePath="CurrentForecast.Summary" Changed="ScreenModel.Refresh" />
+                    <BoundInputText Label="Summary" ValueRoot="@ScreenModel" ValuePath="CurrentForecast.Summary" ReadOnly="true" Changed="ScreenModel.Refresh" />
                 </form>
-
-                <form>
-                    <div class="form-group">
-                        <label for="wfTempF">Temperature (°F):</label>
-                        <input type="text" id="wfTempF" class="form-control" @value="_current.TemperatureF" readonly />
-                    </div>
-                    <div class="form-group">
-                        <label for="wfSummary">Summary:</label>
-                        <InputText Id="wfSummary" class="form-control" @bind-Value="ScreenModel.CurrentForecast.Summary" readonly />
-                    </div>
-                </form>
+                <button type="button" @onclick="@UpdateSelection">Commit</button>
             </div>
         </div>
     </EditForm>
@@ -57,48 +46,19 @@ else
 @*}*@
 
 @code {
-//IEnumerable<WeatherForecast> forecasts;
-
-//protected override async Task OnInitAsync()
-//{
-//    forecasts = (await Service.GetForecastAsync(null, null, 0, 10)).pageRows;
-//}
-
-//Task<GetRowsResult> LocalGetRows(int? skip, int? take, SortModel sort)
-//{
-//    var rows = forecasts;
-
-//    if (skip.HasValue)
-//        rows = rows.Skip(skip.Value);
-//    if (take.HasValue)
-//        rows = rows.Take(take.Value);
-//    if (sort != null)
-//    {
-//        // We ignore case since default JSON serialization will lowercase the
-//        // first letter and so the ColId won't match its origin property otherwise
-//        var p = typeof(WeatherForecast).GetProperty(sort.ColId, System.Reflection.BindingFlags.IgnoreCase
-//            | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-//        if (sort.Sort == "desc")
-//            rows = rows.OrderByDescending(x => p.GetValue(x));
-//        else
-//            rows = rows.OrderBy(x => p.GetValue(x));
-//    }
-
-//    return Task.FromResult(new GetRowsResult
-//    {
-//        Success = true,
-//        LastRow = forecasts.Count(),
-//        BlockRows = rows.ToArray(),
-//    });
-//}
-
 FetchData2Model ScreenModel { get; set; } = new FetchData2Model
 {
-    CurrentForecast = new WeatherForecast(),
+    CurrentForecast = null,
 };
 
-//WeatherForecast _current = new WeatherForecast();
+AgGrid theGrid;
+
+protected override void OnInit()
+{
+    ScreenModel.Refreshed += (s, e) => StateHasChanged();
+}
+
+public Dictionary<DateTime, WeatherForecast> EditedRows { get; set; } = new Dictionary<DateTime, WeatherForecast>();
 
 async Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
 {
@@ -114,6 +74,15 @@ async Task<GetRowsResult> GetRows(int? skip, int? take, SortModel sort)
 
 
     var result = await Service.GetForecastAsync(options);
+
+    var rows = result.Items.ToArray();
+    foreach (var r in rows)
+    {
+        if (EditedRows.ContainsKey(r.Date))
+        {
+
+        }
+    }
 
     return new GetRowsResult
     {
@@ -138,6 +107,15 @@ void RowSelected(string selJson)
     {
         Console.WriteLine("UNSELECTED");
         ScreenModel.CurrentForecast = null;
+    }
+}
+
+async Task UpdateSelection()
+{
+    if (ScreenModel.CurrentForecast != null)
+    {
+        var updatedJson = JsonHelper.ToString<WeatherForecast[]>(new[] { ScreenModel.CurrentForecast });
+        await theGrid.UpdateSelection(updatedJson);
     }
 }
 

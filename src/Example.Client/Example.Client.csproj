@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Example.Shared\Example.Shared.csproj" />
     <ProjectReference Include="..\Conjure.Security\Conjure.Security.csproj" />
     <ProjectReference Include="..\Conjure.Data\Conjure.Data.csproj" />
+    <ProjectReference Include="..\Conjure.Data.Client\Conjure.Data.Client.csproj" />
   </ItemGroup>
 
 </Project>
