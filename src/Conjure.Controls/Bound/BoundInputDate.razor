@@ -1,9 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
-@inherits BoundInputBase<string>
+@inherits BoundInputBase<DateTime?>
 
 <div class="form-group">
     <label for="@inputId">@Label</label>
-    <InputText Id="@inputId" Class="form-control"
+    <InputDate Id="@inputId" Class="form-control"
                readonly="@(ReadOnly || (valueTarget?.IsReadOnly ?? true))"
                @bind-Value="TypedValue" />
 </div>

@@ -1,0 +1,10 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@typeparam TInput
+@inherits BoundInputBase<TInput>
+
+<div class="form-group">
+    <label for="@inputId">@Label</label>
+    <InputNumber T="TInput" Id="@inputId" Class="form-control"
+                 readonly="@(ReadOnly || (valueTarget?.IsReadOnly ?? true))"
+                 @bind-Value="TypedValue" />
+</div>
