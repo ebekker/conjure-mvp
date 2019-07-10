@@ -20,7 +20,7 @@ namespace Example.Client
 
         public static string ToString<T>(T value)
         {
-            return JsonSerializer.ToString<T>(value);
+            return JsonSerializer.ToString<T>(value, DefaultSerOptions);
         }
     }
 }
